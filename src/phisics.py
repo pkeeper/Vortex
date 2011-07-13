@@ -6,7 +6,7 @@ Created on 12 июля 2011
 '''
 import ode
 
-class protoworld():
+class protoworld(object):
     # A list with ODE bodies
     bodies = []
     # The geoms for each of the bodies
