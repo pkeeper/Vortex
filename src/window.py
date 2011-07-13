@@ -7,7 +7,7 @@ Created on 13 июля 2011
 import pyglet
 from pyglet.gl import *
 from pyglet.window import key
-from main import control,ship,ship2
+from main import control, ship, ship2, right_wall, left_wall, top_wall
 
 # Define a simple function to create ctypes arrays of floats:
 def vec(*args):
@@ -26,6 +26,9 @@ def draw():
     ship.calculate()
     ship.draw_body()
     ship2.draw_body()
+    right_wall.draw_body()
+    left_wall.draw_body()
+    top_wall.draw_body()
     #batch.draw()
     #label.draw()
     #fps_display.draw()

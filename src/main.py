@@ -9,7 +9,8 @@ from pyglet.gl import *
 #from OpenGL.GLUT import glutInit,glutSolidCube
 from math import *
 from phisics import protoworld
-from ships import shipClass
+from ships import Ship,  PhysicsBody
+import ode
 #import ctypes
 #import sys, time 
 
@@ -31,10 +32,26 @@ fps = 60
 fps_display = pyglet.clock.ClockDisplay()
 pyglet.clock.schedule_interval(world.simulate, 1.0/fps)
 
-ship = shipClass(world)
+ship = Ship(world, (1000, 0.4, 0.7, 0.7), (0.0, 3.0, 0.0))
+ship2 = Ship(world, (1000, 0.4, 0.7, 0.7), (0.2, 0.0, 0.0))
 
-ship2 = shipClass(world)
-ship2.body.setPosition((0.2,0.0,0.0))
+right_wall = PhysicsBody(world, (99999, 0.5, 4, 1), (3.0, 2.0, 0.0))
+left_wall = PhysicsBody(world, (99999, 0.5, 4, 1), (-3.0, 2.0, 0.0))
+top_wall = PhysicsBody(world, (9999, 8, 0.5, 1), (0.0, 4.0, 0.0))
+
+# Fixed joints for the walls
+wall_joints = ode.JointGroup()
+right_wall_joint = ode.FixedJoint(world.world, wall_joints)
+right_wall_joint.attach(right_wall.body, ode.environment)
+right_wall_joint.setFixed()
+
+left_wall_joint = ode.FixedJoint(world.world, wall_joints)
+left_wall_joint.attach(left_wall.body, ode.environment)
+left_wall_joint.setFixed()
+
+top_wall_joint = ode.FixedJoint(world.world, wall_joints)
+top_wall_joint.attach(top_wall.body, ode.environment)
+top_wall_joint.setFixed()
 
 class controlClass():
     '''

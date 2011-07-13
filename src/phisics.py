@@ -29,10 +29,10 @@ class protoworld():
         contacts = ode.collide(geom1, geom2)
     
         # Create contact joints
-        world,contactgroup = args
+        world, contactgroup = args
         for c in contacts:
-            c.setBounce(0.1)
-            c.setMu(5000)
+            #c.setBounce(0.1)
+            #c.setMu(5000)
             j = ode.ContactJoint(world, contactgroup, c)
             j.attach(geom1.getBody(), geom2.getBody())
     
@@ -62,17 +62,18 @@ class protoworld():
             self.contactgroup.empty()
             if self.flat:
                 for body in self.bodies:
-                    x,y,z = body.getPosition()
-                    body.setPosition((x,y,0.0))
+                    x, y, z = body.getPosition()
+                    body.setPosition((x, y, 0.0))
                     R = body.getRotation()
                     body.setRotation((R[0], R[1], 0, R[3], R[4], 0, R[6], R[7], R[8]))
             
             
     # create_box (temporary)
-    def create_box(self,density, lx, ly, lz):
+    def create_box(self, box_params):
         """Create a box body and its corresponding geom."""
     
         # Create body
+        density, lx, ly, lz = box_params
         body = ode.Body(self.world)
         M = ode.Mass()
         M.setBox(density, lx, ly, lz)
