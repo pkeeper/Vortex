@@ -15,6 +15,8 @@ class protoworld():
     # two bodies collide
     contactgroup = ode.JointGroup()
     
+    flat = True     #try to prevent any Z-axis movement
+    
     # Collision callback
     def near_callback(self,args, geom1, geom2):
         """Callback function for the collide() method.
@@ -58,6 +60,13 @@ class protoworld():
     
             # Remove all contact joints
             self.contactgroup.empty()
+            if self.flat:
+                for body in self.bodies:
+                    x,y,z = body.getPosition()
+                    body.setPosition((x,y,0.0))
+                    R = body.getRotation()
+                    body.setRotation((R[0], R[1], 0, R[3], R[4], 0, R[6], R[7], R[8]))
+            
             
     # create_box (temporary)
     def create_box(self,density, lx, ly, lz):
