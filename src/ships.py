@@ -24,6 +24,9 @@ class PhysicsBody(object):
         """Draw an ODE body."""
         x, y, z = self.body.getPosition()
         R = self.body.getRotation()
+        print R
+        #set no rotation
+        self.body.setRotation((0, -1, 0, 1, 0, 0, 0, 0, 1))
         rot = (GLdouble * 16)(R[0], R[3], R[6], 0.,
                R[1], R[4], R[7], 0.,
                R[2], R[5], R[8], 0.,
@@ -88,7 +91,7 @@ class PhysicsBody(object):
         glVertex3f( 1.0,-1.0,-1.0)        # Bottom Right Of The Quad (Right)
         glEnd()                # Done Drawing The Quad
         glPopMatrix()
-        print self.body.getPosition()
+        #print self.body.getPosition()
 
 class Wall(PhysicsBody):
     
@@ -169,7 +172,7 @@ class Wall(PhysicsBody):
         glVertex3f( 1.0,-1.0,-1.0)        # Bottom Right Of The Quad (Right)
         glEnd()                # Done Drawing The Quad
         glPopMatrix()
-        print self.body.getPosition()
+        #print self.body.getPosition()
 
 class Ship(PhysicsBody):
   
