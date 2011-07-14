@@ -1,12 +1,14 @@
 #-*- coding: utf-8 -*-
-'''
-Created on 12 июля 2011
-
-@author: keeper
-'''
+# ----------------------------------------------------------------------------
+#
+#  Physics-related routines
+#
+#Created on 12 июля 2011
+#@author: keeper
+# ----------------------------------------------------------------------------
 import ode
 
-class protoworld(object):
+class ODEPhysicsWorld(object):
     # A list with ODE bodies
     bodies = []
     # The geoms for each of the bodies
@@ -36,12 +38,12 @@ class protoworld(object):
             j = ode.ContactJoint(world, contactgroup, c)
             j.attach(geom1.getBody(), geom2.getBody())
     
-    def create(self):
+    def __init__(self,gravity_vec,erp,cfm):
         #create Dynamics world
         self.world = ode.World()
-        self.world.setGravity((0, -9.81, 0))
-        self.world.setERP(0.8)
-        self.world.setCFM(1E-5)
+        self.world.setGravity(gravity_vec)
+        self.world.setERP(erp)
+        self.world.setCFM(cfm)
         #create Collision world
         self.space = ode.Space()
         # Create a plane geom which prevent the objects from falling forever
@@ -65,7 +67,7 @@ class protoworld(object):
                     x, y, z = body.getPosition()
                     body.setPosition((x, y, 0.0))
                     R = body.getRotation()
-                    body.setRotation((R[0], R[1], 0, R[3], R[4], 0, R[6], R[7], R[8]))
+                    #body.setRotation((R[0], -1, 0, 1, R[4], 0, R[6], R[7], R[8]))
             
             
     # create_box (temporary)

@@ -1,19 +1,26 @@
 #-*- coding: utf-8 -*-
-'''
-Created on 13 июля 2011
-
-@author: keeper
-'''
+# ----------------------------------------------------------------------------
+#
+#    Multimedia Library abstractions and routines
+#
+#Created on 13 июля 2011
+#@author: keeper
+# ----------------------------------------------------------------------------
 import pyglet
 from pyglet.gl import *
 from pyglet.window import key
-from main import control, ship, ship2, right_wall, left_wall, top_wall
+debug = True
+
 
 # Define a simple function to create ctypes arrays of floats:
 def vec(*args):
     return (GLfloat * len(args))(*args)
 
-def draw():
+def schedule(func,dt):
+    pyglet.clock.schedule_interval(func,dt)
+
+def draw(world):
+    if debug: print "Start draw loop"
     #window.clear()
 #    glTranslatef(0, 0, -4)
 #    glRotatef(0, 0, 0, 1)
@@ -23,15 +30,15 @@ def draw():
     glLoadIdentity();                    # Reset The View
     #glTranslatef(-1.5,0.0,-6.0)                # Move Left And Into The Screen
     #image.blit(ship.dx, ship.dy)
-    ship.calculate()
-    ship.draw_body()
-    ship2.draw_body()
-    right_wall.draw_body()
-    left_wall.draw_body()
-    top_wall.draw_body()
+    world.ship.calculate()
+    world.ship.draw_body()
+    #ship2.draw_body()
+    for body in world.statics:
+        body.draw_body()
     #batch.draw()
     #label.draw()
     #fps_display.draw()
+    if debug: print "End draw loop"
 
   
 
@@ -45,24 +52,36 @@ class pygwindow(pyglet.window.Window):
             super(pygwindow, self).__init__(resizable=True, config=config)
         except:
             super(pygwindow, self).__init__(resizable=True)
-        self.setup()
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def setup(self):
+    def setup(self,world):
         self.width = 640
         self.height = 480
+        self.world = world
         global rquad
         rquad = 0.0   #(was global)
         self.InitGL(self.width, self.height)
         pyglet.clock.schedule_interval(self.update, 1/30.0) # update at 60Hz
+           
+        #Init batch for fast render
+        self.batch = pyglet.graphics.Batch()
+        
+        self.label = pyglet.text.Label('Hello, world', 
+                                  font_name='Times New Roman', 
+                                  font_size=24,
+                                  x=320, y=240,
+                                  anchor_x='center', anchor_y='center')
+        self.fps_display = pyglet.clock.ClockDisplay()
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def update(self,dt):
-        draw()
+        if debug: print "Event: Update"
+        draw(self.world)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def on_draw(self):
-        draw()
+        if debug: print "Event: On Draw"
+        draw(self.world)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def on_resize(self,w,h):
@@ -123,3 +142,11 @@ class pygwindow(pyglet.window.Window):
             control.down(False)
 
     
+def MultimediaInit():
+    global window
+    window = pygwindow()
+    
+def Run(world):
+    
+    window.setup(world)
+    pyglet.app.run()

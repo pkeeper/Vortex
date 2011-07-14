@@ -1,57 +1,24 @@
 #-*- coding: utf-8 -*-
-'''
-Created on 12 июля 2011
+# ----------------------------------------------------------------------------
+#
+#  Main file of Vortex game
+#
+#Created on 12 июля 2011
+#@author: keeper
+# ----------------------------------------------------------------------------
+debug = True
 
-@author: keeper
-'''
-import pyglet
-from pyglet.gl import *
-#from OpenGL.GLUT import glutInit,glutSolidCube
-from math import *
-from phisics import protoworld
-from ships import Ship,  PhysicsBody, Wall
-import ode
-#import ctypes
-#import sys, time 
+from phisics import ODEPhysicsWorld
+from ships import Ship, Wall
+from multimedia import MultimediaInit, Run, schedule
 
-   
-#Init batch for fast render
-batch = pyglet.graphics.Batch()
-
-label = pyglet.text.Label('Hello, world', 
-                          font_name='Times New Roman', 
-                          font_size=24,
-                          x=320, y=240,
-                          anchor_x='center', anchor_y='center')
-
-
-world = protoworld()
-world.create()
-
+#some params
 fps = 60
-fps_display = pyglet.clock.ClockDisplay()
-pyglet.clock.schedule_interval(world.simulate, 1.0/fps)
 
-ship = Ship(world, (1000, 0.4, 0.7, 0.7), (0.0, 3.0, 0.0))
-ship2 = Ship(world, (1000, 0.4, 0.7, 0.7), (0.2, 0.0, 0.0))
-
-right_wall = Wall(world, (99999, 0.5, 4, 1), (3.0, 2.0, 0.0))
-left_wall = Wall(world, (99999, 0.5, 4, 1), (-3.0, 2.0, 0.0))
-top_wall = Wall(world, (9999, 8, 0.5, 1), (0.0, 4.0, 0.0))
-
-## Fixed joints for the walls
-#wall_joints = ode.JointGroup()
-#right_wall_joint = ode.FixedJoint(world.world, wall_joints)
-#right_wall_joint.attach(right_wall.body, ode.environment)
-#right_wall_joint.setFixed()
-#
-#left_wall_joint = ode.FixedJoint(world.world, wall_joints)
-#left_wall_joint.attach(left_wall.body, ode.environment)
-#left_wall_joint.setFixed()
-#
-#top_wall_joint = ode.FixedJoint(world.world, wall_joints)
-#top_wall_joint.attach(top_wall.body, ode.environment)
-#top_wall_joint.setFixed()
+#Physics world params
+gravity_vec = (0, -9.81, 0)
+erp = 0.8
+cfm = 1E-5
 
 class controlClass():
     '''
@@ -60,24 +27,58 @@ class controlClass():
     to control some system that controls the ship or
     to control UI as user likes
     '''
+    def __init__(self,object):
+        self.ship = object
     
     def up(self,set):
-        ship.uptrust=set
+        self.ship.upthrust=set
     def down(self,set):
-        ship.downrust=set
+        self.ship.downthrust=set
     def left(self,set):
-        ship.lefttrust=set
+        self.ship.leftthrust=set
     def right(self,set):
-        ship.righttrust=set
+        self.ship.rightthrust=set
 
-control = controlClass()
+class GameWorld():
+    statics = []
+    ship = object
+    control = object
+        
+world = GameWorld()
+
+def init():
+    if debug: print "Start Main.init"
+    #init multimedia engine
+    MultimediaInit()
+    
+    #set physics engine and create world
+    global pWorld
+    pWorld = ODEPhysicsWorld(gravity_vec,erp,cfm)    
+    #set physics simulation on intervals
+    schedule(pWorld.simulate, 1.0/fps)
+    if debug: print "End Main.LoadTestMap"
+
+
+def LoadTestMap():
+    #=========================================
+    #Load map or smth like that
+    #=========================================
+    if debug: print "Start Main.LoadTestMap"
+    global world
+    world.ship = Ship(pWorld, (1000, 0.4, 0.7, 0.7), (0.0, 3.0, 0.0))
+    world.control = controlClass(world.ship)
+    #тоже ship2 = Ship(world, (1000, 0.4, 0.7, 0.7), (0.2, 0.0, 0.0))
+    
+    world.statics.append(Wall(pWorld, (99999, 0.5, 4, 1), (3.0, 2.0, 0.0)))
+    #Left wall
+    world.statics.append(Wall(pWorld, (99999, 0.5, 4, 1), (-3.0, 2.0, 0.0)))
+    #Top Wall
+    world.statics.append(Wall(pWorld, (9999, 8, 0.5, 1), (0.0, 4.25, 0.0)))
+    if debug: print "End Main.LoadTestMap"
 
         
-
-
-
 ##################################main
 if __name__ == "__main__":
-    from window import pygwindow
-    window = pygwindow()
-    pyglet.app.run()
+    init()
+    LoadTestMap()
+    Run(world)

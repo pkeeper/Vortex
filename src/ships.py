@@ -6,12 +6,15 @@ Created on 13 июля 2011
 '''
 from pyglet.gl import *
 import ode
+debug = True
 
 class PhysicsBody(object):
     """Abstract class for all physics bodies.
     """
     
     def __init__(self, world, box_params, position):
+        
+        if debug: print "Init: Physics body object"
         self.position = position
         self.world = world
         self.box_params = box_params
@@ -22,9 +25,11 @@ class PhysicsBody(object):
 
     def draw_body(self):
         """Draw an ODE body."""
+        
+        if debug: print "Body: Draw"
         x, y, z = self.body.getPosition()
         R = self.body.getRotation()
-        print R
+        #print R
         #set no rotation
         self.body.setRotation((0, -1, 0, 1, 0, 0, 0, 0, 1))
         rot = (GLdouble * 16)(R[0], R[3], R[6], 0.,
@@ -176,19 +181,20 @@ class Wall(PhysicsBody):
 
 class Ship(PhysicsBody):
   
-    uptrust = False
-    downtrust = False
-    lefttrust = False
-    righttrust = False
+    upthrust = False
+    downthrust = False
+    leftthrust = False
+    rightthrust = False
     
 #    def __init__(self, *args, **kwargs):
 #        PhysicsBody.__init__(self, *args, **kwargs)
 #        self.type = 'ship'
         
     def calculate(self):
-        if self.uptrust: self.body.addForce((0,1900,0))
-        if self.lefttrust: self.body.addForce((-300,0,0))
-        if self.righttrust: self.body.addForce((100,0,0))
+        print self.body.getPosition()
+        if self.upthrust: self.body.addForce((0,1900,0))
+        if self.leftthrust: self.body.addForce((-300,0,0))
+        if self.rightthrust: self.body.addForce((100,0,0))
         R = self.body.getRotation()
         self.body.setRotation((R[0], R[1], 0, R[3], 0, 0,R[6], R[7], R[8]))
         
