@@ -11,7 +11,7 @@ debug = True
 from phisics import ODEPhysicsWorld
 from objects import Ship, Wall
 from multimedia import PygletApp
-from graphics import prepareDraw
+from graphics import GraphicsEngine
 
 #some params
 fps = 60
@@ -51,19 +51,8 @@ class GameWorld():
         for iObject in self.interactives:
             iObject.calculate()
         #make simulation step
-        self.physics.simulate(dt)
+        self.physics.makestep(dt)
         
-    def draw(self):
-        #relocate it to graphics module
-        if debug: print "World Event: On Draw"
-        
-        prepareDraw()
-        
-        for Object in self.interactives:
-            Object.draw_body()
-        for Object in self.statics:
-            Object.draw_body()
-
     def init(self):
         if debug: print "Start Main.init"
         
@@ -72,8 +61,11 @@ class GameWorld():
         #set physics simulation on intervals
         app.schedule(self.mainloop, 1.0/fps)
         
+        #set and init graphix engine
+        self.graphics = GraphicsEngine()
+        
         #set Draw handler (will redraw on every event, scheduled or input)
-        app.window.on_draw = self.draw
+        app.window.on_draw = self.graphics.makestep
         
         if debug: print "End Main.init"
         
@@ -87,16 +79,17 @@ def LoadTestMap():
     #=========================================
     if debug: print "Start Main.LoadTestMap"
     global world
-    world.ship = Ship(world.physics, (1000, 0.4, 0.7, 0.7), (0.0, 2.0, 0.0))
+    world.ship = Ship(world.physics, world.graphics, 1000, (0.4, 0.7, 0.7), (0.0, 2.0, 0.0))
+    world.interactives.append(world.ship)
     world.control = controlClass(world.ship)
     
-    world.statics.append(Ship(world.physics, (1000, 0.4, 0.7, 0.7), (0.2, 0.0, 0.0)))
+    world.interactives.append(Ship(world.physics, world.graphics, 1000, (0.4, 0.7, 0.7), (0.2, 0.2, 0.0)))
     
-    world.statics.append(Wall(world.physics, (99999, 0.5, 4, 1), (3.0, 2.0, 0.0)))
+    world.statics.append(Wall(world.physics, world.graphics, 1, (0.5, 4, 1), (3.0, 2.0, 0.0)))
     #Left wall
-    world.statics.append(Wall(world.physics, (99999, 0.5, 4, 1), (-3.0, 2.0, 0.0)))
+    world.statics.append(Wall(world.physics, world.graphics, 1, (0.5, 4, 1), (-3.0, 2.0, 0.0)))
     #Top Wall
-    world.statics.append(Wall(world.physics, (9999, 8, 0.5, 1), (0.0, 4.25, 0.0)))
+    world.statics.append(Wall(world.physics, world.graphics, 1, (8, 0.5, 1), (0.0, 4.3, 0.0)))
     if debug: print "End Main.LoadTestMap"
 
         

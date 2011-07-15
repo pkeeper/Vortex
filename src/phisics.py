@@ -49,7 +49,7 @@ class ODEPhysicsWorld(object):
         # Create a plane geom which prevent the objects from falling forever
         self.floor = ode.GeomPlane(self.space, (0,1,0), 0)
         
-    def simulate(self,dt):   
+    def makestep(self,dt):   
         # Simulate
         n = 2
     
@@ -71,11 +71,11 @@ class ODEPhysicsWorld(object):
             
             
     # create_box (temporary)
-    def create_box(self, box_params):
+    def create_box(self, density,box_dimensions):
         """Create a box body and its corresponding geom."""
     
         # Create body
-        density, lx, ly, lz = box_params
+        lx, ly, lz = box_dimensions
         body = ode.Body(self.world)
         M = ode.Mass()
         M.setBox(density, lx, ly, lz)
@@ -90,3 +90,10 @@ class ODEPhysicsWorld(object):
         geom.setBody(body)
     
         return body, geom
+    
+    def set_fixed(self,body):
+        # Make fixed join for the wall
+        joint = ode.FixedJoint(self.world)
+        joint.attach(body, ode.environment)
+        joint.setFixed()
+        return joint
