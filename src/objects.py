@@ -1,13 +1,15 @@
 #-*- coding: utf-8 -*-
-'''
-Created on 13 июля 2011
+# ----------------------------------------------------------------------------
+#
+#  Game object classes
+#
+#Created on 13 июля 2011
+#@author: keeper
+# ----------------------------------------------------------------------------
 
-@author: keeper
-'''
-#import ode
 debug = True
 
-class PhysicsBody(object):
+class SimpleObject(object):
     """Abstract class for all physics bodies.
     """
              
@@ -43,17 +45,17 @@ class PhysicsBody(object):
         self.dimensions = dimensions
         
 
-class Wall(PhysicsBody):
+class Wall(SimpleObject):
     
     def __init__(self, *args, **kwargs):
-        PhysicsBody.__init__(self, *args, **kwargs)
+        SimpleObject.__init__(self, *args, **kwargs)
         # Make fixed join for the wall
-        self.joint = self.pWorld.set_fixed(self.body)
+        self.pWorld.set_fixed(self.body)
     def calculate(self):
         #set no rotation
         self.rotation = (0, -1, 0, 1, 0, 0, 0, 0, 1)
 
-class Ship(PhysicsBody):
+class Ship(SimpleObject):
   
     upthrust = False
     downthrust = False

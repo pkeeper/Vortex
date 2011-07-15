@@ -15,10 +15,21 @@ debug = True
 # Define a simple function to create ctypes arrays of floats:
 def vec(*args):
     return (GLfloat * len(args))(*args)
+
+class DefaultController():
+    '''
+    Basic controller state class
+    '''    
+    up = False
+    down = False
+    left = False
+    right = False
+        
   
 
 ##################################Window setup
 class pygwindow(pyglet.window.Window):
+    controller = DefaultController()
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self):
         config = Config(sample_buffers=1, samples=4,
@@ -50,7 +61,7 @@ class pygwindow(pyglet.window.Window):
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def on_draw(self):
         if debug: print "Event: On Draw"
-        draw(self.world)
+        pass
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def on_resize(self,w,h):
@@ -92,23 +103,23 @@ class pygwindow(pyglet.window.Window):
         if symbol == key.ESCAPE:
             self.dispatch_event('on_close')
         elif symbol == key.RIGHT:
-            control.right(True)
+            self.controller.right = True
         elif symbol == key.LEFT:
-            control.left(True)
+            self.controller.left = True
         elif symbol == key.UP:
-            control.up(True)
+            self.controller.up =True
         elif symbol == key.DOWN:
-            control.down(True)
+            self.controller.down = True
             
     def on_key_release(self,symbol, modifiers):
         if symbol == key.RIGHT:
-            control.right(False)
+            self.controller.right = False
         elif symbol == key.LEFT:
-            control.left(False)
+            self.controller.left = False
         elif symbol == key.UP:
-            control.up(False)
+            self.controller.up = False
         elif symbol == key.DOWN:
-            control.down(False)
+            self.controller.down = False
 
    
 class PygletApp():    

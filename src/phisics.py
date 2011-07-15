@@ -17,6 +17,11 @@ class ODEPhysicsWorld(object):
     # two bodies collide
     contactgroup = ode.JointGroup()
     
+    # A joint list for static joints (walls, etc.)
+    # no need to save joint that never change to object
+    # but must be saved somewhere
+    staticjoints = []
+    
     flat = True     #try to prevent any Z-axis movement
     
     # Collision callback
@@ -33,8 +38,8 @@ class ODEPhysicsWorld(object):
         # Create contact joints
         world, contactgroup = args
         for c in contacts:
-            #c.setBounce(0.1)
-            #c.setMu(5000)
+            c.setBounce(0.1)
+            c.setMu(5000)
             j = ode.ContactJoint(world, contactgroup, c)
             j.attach(geom1.getBody(), geom2.getBody())
     
@@ -92,8 +97,8 @@ class ODEPhysicsWorld(object):
         return body, geom
     
     def set_fixed(self,body):
-        # Make fixed join for the wall
+        # Make fixed join for the body
         joint = ode.FixedJoint(self.world)
         joint.attach(body, ode.environment)
         joint.setFixed()
-        return joint
+        self.staticjoints.append(joint)

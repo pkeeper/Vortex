@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
 #
-#        
+#        All graphics code here (OpenGL abstraction)
 #
 #Created on 15 июля 2011
 #@author: keeper
@@ -74,7 +74,7 @@ def DrawBox(position,dimensions,rotation):
         glVertex3f(-1.0,-1.0,-1.0)        # Bottom Left Of The Quad (Left)
         glVertex3f(-1.0,-1.0, 1.0)        # Bottom Right Of The Quad (Left)
 
-        glColor3f(1.0,0.0,1.0)            # Set The Color To Violet
+        glColor3f(0.0,1.0,0.0)            # Set The Color To green
         glVertex3f( 1.0, 1.0,-1.0)        # Top Right Of The Quad (Right)
         glVertex3f( 1.0, 1.0, 1.0)        # Top Left Of The Quad (Right)
         glVertex3f( 1.0,-1.0, 1.0)        # Bottom Left Of The Quad (Right)

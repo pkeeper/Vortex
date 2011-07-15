@@ -21,39 +21,42 @@ gravity_vec = (0, -9.81, 0)
 erp = 0.8
 cfm = 1E-5
 
-class controlClass():
+class DefaultController():
     '''
     User-defined control class
     may be used to directly control ship or 
     to control some system that controls the ship or
     to control UI as user likes
     '''
-    def __init__(self,object):
-        self.ship = object
-    
-    def up(self,set):
-        self.ship.upthrust=set
-    def down(self,set):
-        self.ship.downthrust=set
-    def left(self,set):
-        self.ship.leftthrust=set
-    def right(self,set):
-        self.ship.rightthrust=set
+    def __init__(self,ship,controller):
+        self.ship = ship
+        self.state = controller
+        
+    def makestep(self):
+        self.ship.upthrust  =   self.state.up
+        self.ship.downthrust=   self.state.down
+        self.ship.leftthrust=   self.state.left
+        self.ship.rightthrust=  self.state.right
 
 class GameWorld():
+    # Static objects list
     statics = []
+    
+    # Interactive objects list
     interactives = []
     control = object
     
     def mainloop(self,dt):
         if debug: print "World mainloop"
+        
+        self.control.makestep()
         #calculate movements (forces) for each interactive object
         for iObject in self.interactives:
             iObject.calculate()
         #make simulation step
         self.physics.makestep(dt)
         
-    def init(self):
+    def __init__(self):
         if debug: print "Start Main.init"
         
         #set and init physics engine (now only ODE) and create world
@@ -70,36 +73,34 @@ class GameWorld():
         if debug: print "End Main.init"
         
 
-        
-world = GameWorld()
-
 def LoadTestMap():
     #=========================================
     #Load map or smth like that
     #=========================================
     if debug: print "Start Main.LoadTestMap"
     global world
-    world.ship = Ship(world.physics, world.graphics, 1000, (0.4, 0.7, 0.7), (0.0, 2.0, 0.0))
+    world.ship = Ship(world.physics, world.graphics, 100, (0.4, 0.7, 0.7), (-2.0, 0.1, 0.0))
     world.interactives.append(world.ship)
-    world.control = controlClass(world.ship)
     
-    world.interactives.append(Ship(world.physics, world.graphics, 1000, (0.4, 0.7, 0.7), (0.2, 0.2, 0.0)))
+    #set up default controller
+    world.control = DefaultController(world.ship,app.window.controller)
     
-    world.statics.append(Wall(world.physics, world.graphics, 1, (0.5, 4, 1), (3.0, 2.0, 0.0)))
+    world.interactives.append(Ship(world.physics, world.graphics, 1000, (0.4, 0.7, 0.7), (1.2, 2, 0.0)))
+    
+    world.statics.append(Wall(world.physics, world.graphics, 1, (0.5, 4, 2), (3.0, 2.0, 0.0)))
     #Left wall
-    world.statics.append(Wall(world.physics, world.graphics, 1, (0.5, 4, 1), (-3.0, 2.0, 0.0)))
+    world.statics.append(Wall(world.physics, world.graphics, 1, (0.5, 4, 2), (-3.0, 2.0, 0.0)))
     #Top Wall
-    world.statics.append(Wall(world.physics, world.graphics, 1, (8, 0.5, 1), (0.0, 4.3, 0.0)))
+    world.statics.append(Wall(world.physics, world.graphics, 1, (8, 0.5, 2), (0.0, 4.3, 0.0)))
     if debug: print "End Main.LoadTestMap"
 
         
 ##################################main
 if __name__ == "__main__":         
     #set and init multimedia engine (now only Pyglet)
-    global app 
     app = PygletApp()
-    #now we can init world
-    world.init()
+    #now we can init game world
+    world = GameWorld()
     #set up scene
     LoadTestMap()
     #start the game
