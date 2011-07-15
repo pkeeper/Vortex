@@ -15,31 +15,6 @@ debug = True
 # Define a simple function to create ctypes arrays of floats:
 def vec(*args):
     return (GLfloat * len(args))(*args)
-
-def schedule(func,dt):
-    pyglet.clock.schedule_interval(func,dt)
-
-def draw(world):
-    if debug: print "Start draw loop"
-    #window.clear()
-#    glTranslatef(0, 0, -4)
-#    glRotatef(0, 0, 0, 1)
-#    glRotatef(0, 0, 1, 0)
-#    glRotatef(0, 1, 0, 0)
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);    # Clear The Screen And The Depth Buffer
-    glLoadIdentity();                    # Reset The View
-    #glTranslatef(-1.5,0.0,-6.0)                # Move Left And Into The Screen
-    #image.blit(ship.dx, ship.dy)
-    world.ship.calculate()
-    world.ship.draw_body()
-    #ship2.draw_body()
-    for body in world.statics:
-        body.draw_body()
-    #batch.draw()
-    #label.draw()
-    #fps_display.draw()
-    if debug: print "End draw loop"
-
   
 
 ##################################Window setup
@@ -61,8 +36,7 @@ class pygwindow(pyglet.window.Window):
         global rquad
         rquad = 0.0   #(was global)
         self.InitGL(self.width, self.height)
-        pyglet.clock.schedule_interval(self.update, 1/30.0) # update at 60Hz
-           
+          
         #Init batch for fast render
         self.batch = pyglet.graphics.Batch()
         
@@ -72,11 +46,6 @@ class pygwindow(pyglet.window.Window):
                                   x=320, y=240,
                                   anchor_x='center', anchor_y='center')
         self.fps_display = pyglet.clock.ClockDisplay()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def update(self,dt):
-        if debug: print "Event: Update"
-        draw(self.world)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def on_draw(self):
@@ -141,12 +110,20 @@ class pygwindow(pyglet.window.Window):
         elif symbol == key.DOWN:
             control.down(False)
 
+   
+class PygletApp():    
+    '''Unified interface to application through PyGlet
+    other libs will import and use only object of this class 
+    or class to other library with same interface
+    '''
+     
     
-def MultimediaInit():
-    global window
-    window = pygwindow()
-    
-def Run(world):
-    
-    window.setup(world)
-    pyglet.app.run()
+    def schedule(self,func,dt):
+        pyglet.clock.schedule_interval(func,dt)
+        
+    def __init__(self):
+        self.window = pygwindow()
+        
+    def run(self,world):    
+        self.window.setup(world)
+        pyglet.app.run()
