@@ -9,6 +9,11 @@
 from pyglet.gl import *
 debug = True
 
+
+# Define a simple function to create ctypes arrays of floats:
+def vec(*args):
+    return (GLfloat * len(args))(*args)
+
 def DrawBox(position,dimensions,rotation):
         """Draw simple box"""
         
@@ -87,6 +92,7 @@ class GraphicsEngine():
     static = []     #Static objects list 
     dynamic = []    #Objects that can change their position (not frequent)
     active = []     #Objects that can change their position every frame
+    camerapos = (-1.5,0.0,-6.0)
 
     def makestep(self):
         #here goes the main draw loop
@@ -104,3 +110,35 @@ class GraphicsEngine():
             DrawBox(Object.position,Object.dimensions,Object.rotation)
         for Object in self.static:
             DrawBox(Object.position,Object.dimensions,Object.rotation)
+            
+            
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # A general OpenGL initialization function.  Sets all of the initial parameters.
+    def __init__(self, Width, Height):                # We call this right after our OpenGL window is created.
+        glClearColor(0.4,0.4,0.4,0)       # This Will Clear The Background Color To Black
+        glClearDepth(1.0)                          # Enables Clearing Of The Depth Buffer
+        glDepthFunc(GL_LESS)                      # The Type Of Depth Test To Do
+        glEnable(GL_DEPTH_TEST)                    # Enables Depth Testing
+        glShadeModel(GL_SMOOTH)                   # Enables Smooth Color Shading
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()                          # Reset The Projection Matrix
+                                                        # Calculate The Aspect Ratio Of The Window
+        # Light source
+        glLightfv(GL_LIGHT0,GL_POSITION,vec(0,0,1,0))
+        glLightfv(GL_LIGHT0,GL_DIFFUSE,vec(1,0,1,1))
+        glLightfv(GL_LIGHT0,GL_SPECULAR,vec(1,1,1,1))
+        glEnable(GL_LIGHT0)
+        #(pyglet initializes the screen so we ignore this call)
+        #gluPerspective(45.0, float(Width)/float(Height), 0.1, 100.0)
+        glMatrixMode(GL_MODELVIEW)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # The function called when our window is resized (which shouldn't happen if you enable fullscreen, below)
+    def ReSizeGLScene(self,Width, Height):
+        if Height == 0:                              # Prevent A Divide By Zero If The Window Is Too Small
+            Height = 1
+        glViewport(0, 0, Width, Height)        # Reset The Current Viewport And Perspective Transformation
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(45.0, float(Width)/float(Height), 0.1, 100.0)
+        glMatrixMode(GL_MODELVIEW)

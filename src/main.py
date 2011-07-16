@@ -27,17 +27,20 @@ class DefaultController():
     may be used to directly control ship or 
     to control some system that controls the ship or
     to control UI as user likes
-    '''
+    '''        
     def __init__(self,ship,controller):
         self.ship = ship
         self.state = controller
         
     def makestep(self):
-        self.ship.upthrust  =   self.state.up
-        self.ship.downthrust=   self.state.down
-        self.ship.leftthrust=   self.state.left
-        self.ship.rightthrust=  self.state.right
-
+        #set up engine thrusts
+        if self.state.up: self.ship.gravity_engine.thrust = self.ship.gravity_engine.thrust+0.5
+        if self.state.down : self.ship.gravity_engine.thrust = self.ship.gravity_engine.thrust-0.5
+        if self.state.right: self.ship.nose_engine.thrust = self.ship.nose_engine.thrust+1
+        else:   self.ship.nose_engine.thrust = 0
+        if self.state.left:self.ship.back_engine.thrust = self.ship.back_engine.thrust+1
+        else:   self.ship.back_engine.thrust = 0
+        
 class GameWorld():
     # Static objects list
     statics = []
@@ -47,7 +50,7 @@ class GameWorld():
     control = object
     
     def mainloop(self,dt):
-        if debug: print "World mainloop"
+        if debug: print "GameWorld mainloop"
         
         self.control.makestep()
         #calculate movements (forces) for each interactive object
@@ -57,7 +60,7 @@ class GameWorld():
         self.physics.makestep(dt)
         
     def __init__(self):
-        if debug: print "Start Main.init"
+        if debug: print "Start GameWorld.init"
         
         #set and init physics engine (now only ODE) and create world
         self.physics = ODEPhysicsWorld(gravity_vec,erp,cfm)    
@@ -65,12 +68,15 @@ class GameWorld():
         app.schedule(self.mainloop, 1.0/fps)
         
         #set and init graphix engine
-        self.graphics = GraphicsEngine()
+        self.graphics = GraphicsEngine(app.window.width, app.window.height)
         
         #set Draw handler (will redraw on every event, scheduled or input)
         app.window.on_draw = self.graphics.makestep
         
-        if debug: print "End Main.init"
+        #set window resize handler
+        app.window.on_resize = self.graphics.ReSizeGLScene
+        
+        if debug: print "End GameWorld.init"
         
 
 def LoadTestMap():
@@ -104,4 +110,4 @@ if __name__ == "__main__":
     #set up scene
     LoadTestMap()
     #start the game
-    app.run(world)
+    app.run()

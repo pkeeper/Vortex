@@ -9,6 +9,9 @@
 
 debug = True
 
+
+#    Components
+#-----------------
 class Engine(object):
     max_thrust  =   400    #Not Zero
     min_thrust  =   0       #May be negative value
@@ -38,6 +41,8 @@ class Engine(object):
         self.body = body
         self.vector = vector
         
+class GravityEngine(Engine):
+    pass
         
 
 class SimpleObject(object):
@@ -75,6 +80,12 @@ class SimpleObject(object):
         self.position = position
         self.dimensions = dimensions
         
+        
+
+
+
+#    Custom and composite objects
+#--------------------------------------
 
 class Wall(SimpleObject):
     
@@ -87,12 +98,7 @@ class Wall(SimpleObject):
         self.rotation = (0, -1, 0, 1, 0, 0, 0, 0, 1)
 
 class Ship(SimpleObject):
-  
-    upthrust = False
-    downthrust = False
-    leftthrust = False
-    rightthrust = False
-    
+      
     def __init__(self, *args, **kwargs):
         SimpleObject.__init__(self, *args, **kwargs)
         self.gravity_engine = Engine(self.body,(0.0,1.0,0.0))
@@ -100,17 +106,6 @@ class Ship(SimpleObject):
         self.back_engine = Engine(self.body,(-1.0,0.0,0.0))
         
     def calculate(self):
-        if debug: print self.position
-        #set up engines
-        if self.upthrust:
-            print "upthrust" 
-            self.gravity_engine.thrust = self.gravity_engine.thrust+0.5
-        if self.downthrust: self.gravity_engine.thrust = self.gravity_engine.thrust-0.5
-        if self.rightthrust: self.nose_engine.thrust = self.nose_engine.thrust+1
-        else:   self.nose_engine.thrust = 0
-        if self.leftthrust:self.back_engine.thrust = self.back_engine.thrust+1
-        else:   self.back_engine.thrust = 0
-        
         #apply engine forces
         self.gravity_engine.applyForce()
         self.nose_engine.applyForce()

@@ -1,0 +1,20 @@
+Experimental game engine on Python.
+Idea:
+	Make space ship simulator with realistic physics.
+	Maps will be like tunel labyrinth from Matrix, no wide open spaces.
+	Ship has few engines with limitations (max power, vector etc.).
+	Ship can be controlled only through engines.
+	User can write his own ship controller with very basic model 
+		like "if key UP - ship max thrust UP",
+		or more advanced with thrust control system 
+		in witch there can be some engine modes and stabilization.
+	Ship can be controlled by two players or through network, or even by AI.
+
+	Engines dynamics are strictly defined, 
+	ship models have power, mass, engine position limitations 
+	but player can "install" compatible engines and get unique ship dymanics
+
+Requirements:
+	- Python 2.x
+	- Pyglet
+	- PyODE
