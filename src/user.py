@@ -62,11 +62,13 @@ class Models(object):
     #   Ship params and other usefull data
     shuttle_model = {
                      'mass' : 100000,
+                     'color':(0.0,1.0,0.0),
                      'dimensions' : (2.4, 0.45, 0.45),  
                      'max_thrust' : 1250004,                   
                      }
     proto_1a = {
                 'mass':30000,
+                'color':(0.0,0.0,0.5),
                 'dimensions' : (0.4,0.7,0.7)}
     
         

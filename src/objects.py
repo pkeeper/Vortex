@@ -76,7 +76,7 @@ class SimpleObject(object):
         else:
             self.geom.setRotation(RotMatrix)
         
-    def __init__(self, PhysicsWorld, GraphicsEngine, mass,dimensions, position):
+    def __init__(self, PhysicsWorld, GraphicsEngine, mass,dimensions, position,color):
         
         if debug: print "Init: Physics body object"
         
@@ -97,6 +97,7 @@ class SimpleObject(object):
         self.graphics.active.append(self)
         
         self.mass = mass
+        self.color = color
         self.position = position
         self.dimensions = dimensions
         

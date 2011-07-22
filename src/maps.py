@@ -10,6 +10,28 @@ from objects import Ship, Wall,SimpleObject
 
 debug = True
 
+testmap1={'color':(0.0,0.5,0.0),
+          'start_pos':(2.5,2,0),
+          'geoms':(
+                   ((2,20,2),(-1,10,0)),
+                   ((20,2,2),(10,5,0)),
+                   ((20.5,4.8,2),(17.5,8.5,0)),
+                   ((4,0.7,2),(24,0.5,0)),
+                   ((2,2,2),(28,5,0)),
+                   
+                   ((2,4,2),(36,2,0)),
+                   ((5,2,2),(35.5,5,0)),
+                   ((2,12,2),(38.7,10.8,0)),
+                   ((4.9,2,2),(30.5,11,0)),
+                   ((40,2,2),(20,18,0)),
+                   
+                   ((4,4,2),(2,15,0))),
+          }
+
+def LoadMapData(world,data):
+    for box in data['geoms']:
+        world.statics.append(Wall(world.physics, world.graphics, 0, box[0], box[1],data['color']))
+    
 
 def LoadTestMap(world):
     #=========================================
@@ -18,7 +40,9 @@ def LoadTestMap(world):
     if debug: print "Start Main.LoadTestMap"
     from user import Controller, CameraController, models
     
-    world.ship = Ship(world.physics, world.graphics, models.shuttle_model['mass'],models.shuttle_model['dimensions'] , (-2.0, 1, 0.0))
+    world.ship = Ship(world.physics, world.graphics, 
+                      models.proto_1a['mass'],models.proto_1a['dimensions'] , 
+                      testmap1['start_pos'],models.proto_1a['color'])
     world.interactives.append(world.ship)
     
     from camera import Camera
@@ -39,9 +63,5 @@ def LoadTestMap(world):
 #    world.statics.append(SimpleObject(world.physics, world.graphics, 1, (1.4, 0.7, 0.7), (1.2, 2, 0.0)))
 #    world.statics.append(SimpleObject(world.physics, world.graphics, 1, (0.4, 2.0, 0.7), (1.2, 2, 0.0)))
 #    
-    world.statics.append(Wall(world.physics, world.graphics, 0, (0.5, 4, 2), (3.0, 2.0, 0.0)))
-    #Left wall
-    world.statics.append(Wall(world.physics, world.graphics, 0, (0.5, 4, 2), (-3.0, 2.0, 0.0)))
-    #Top Wall
-    world.statics.append(Wall(world.physics, world.graphics, 0, (8, 0.5, 2), (0.0, 4.3, 0.0)))
+    LoadMapData(world, testmap1)
     if debug: print "End Main.LoadTestMap"
