@@ -25,7 +25,7 @@ def DrawBox(position,dimensions,rotation):
         rot = (GLdouble * 16)(R[0], R[3], R[6], 0.,
                R[1], R[4], R[7], 0.,
                R[2], R[5], R[8], 0.,
-               x, y, z, 0.4)
+               x, y, z, 1)
         #rot_gl = (GLfloat * len(rot))(*rot)
         glPushMatrix()
 #        if self.body.shape=="box":
@@ -105,6 +105,7 @@ class GraphicsEngine():
         glLoadIdentity();                    # Reset The View
         #glTranslatef(-1.5,0.0,-6.0)                # Move Left And Into The Screen
         
+        self.camera.activate(6, 4)
         #draw objects 
         for Object in self.active:
             DrawBox(Object.position,Object.dimensions,Object.rotation)

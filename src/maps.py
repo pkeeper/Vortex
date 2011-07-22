@@ -16,10 +16,20 @@ def LoadTestMap(world):
     #Load map or smth like that
     #=========================================
     if debug: print "Start Main.LoadTestMap"
-    from user import Controller, models
+    from user import Controller, CameraController, models
     
     world.ship = Ship(world.physics, world.graphics, models.shuttle_model['mass'],models.shuttle_model['dimensions'] , (-2.0, 1, 0.0))
     world.interactives.append(world.ship)
+    
+    from camera import Camera
+    world.graphics.camera = Camera()
+    #world.graphics.camera.ortho = False
+        
+    world.graphics.camera.x=0
+    world.graphics.camera.y=-1
+    world.graphics.camera.z=8
+    #world.interactives.append(world.camera)
+    world.controllers.append(CameraController(world.graphics.camera,world.ship))
     
     #set up default user input controller
     world.controllers.append(Controller(world.ship,world.inputstate))

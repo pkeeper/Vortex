@@ -9,13 +9,13 @@
 
 #from objects import Ship
 
-class DefaultController():  
+class DefaultShipController(object):  
     '''
-    Standart controller
+    Standart ship controller
     ''' 
-    def __init__(self,ship,controller):
+    def __init__(self,ship,inputstate):
         self.ship = ship
-        self.state = controller
+        self.state = inputstate
         
     def makestep(self):
         #set up engine thrusts
@@ -26,7 +26,23 @@ class DefaultController():
         if self.state.left:self.ship.back_engine.thrust = self.ship.back_engine.thrust+1
         else:   self.ship.back_engine.thrust = 0
         
-class Controller(DefaultController):
+class UIController(object):
+    '''
+    Standart User interface controller
+    '''
+    def __init__(self,inputstate):
+        self.state = inputstate
+        
+class CameraController(object):
+    # Default controller for camera linked to ship
+    def __init__(self,camera,ship):
+        self.camera = camera
+        self.ship = ship
+    def makestep(self):
+        self.camera.lookAt = self.ship.position
+        
+        
+class Controller(DefaultShipController):
     '''
     User-defined control class
     may be used to directly control ship or 
