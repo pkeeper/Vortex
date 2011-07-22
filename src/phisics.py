@@ -38,8 +38,8 @@ class ODEPhysicsWorld(object):
         # Create contact joints
         world, contactgroup = args
         for c in contacts:
-            c.setBounce(0.1)
-            c.setMu(5000)
+            c.setBounce(0.0)
+            c.setMu(2000)
             j = ode.ContactJoint(world, contactgroup, c)
             j.attach(geom1.getBody(), geom2.getBody())
     
@@ -75,6 +75,11 @@ class ODEPhysicsWorld(object):
                     #body.setRotation((R[0], -1, 0, 1, R[4], 0, R[6], R[7], R[8]))
             
             
+    def create_box_geom(self,box_dimensions):
+        
+        # Create a box geom for collision detection
+        geom = ode.GeomBox(self.space, box_dimensions)
+        return geom
     # create_box (temporary)
     def create_box(self, density,box_dimensions):
         """Create a box body and its corresponding geom."""
@@ -84,6 +89,7 @@ class ODEPhysicsWorld(object):
         body = ode.Body(self.world)
         M = ode.Mass()
         M.setBox(density, lx, ly, lz)
+        M.adjust(density)
         body.setMass(M)
     
         # Set parameters for drawing the body

@@ -8,26 +8,21 @@
 # ----------------------------------------------------------------------------
 
 debug = True
+ZERO_ROTATION = (0, -1, 0, 1, 0, 0, 0, 0, 1)
 
 
 #    Components
 #-----------------
 class Engine(object):
-    max_thrust  =   400    #Not Zero
-    min_thrust  =   0       #May be negative value
-    current_force      =   10
-    vector      =   (0.0,1.0,0.0)   #Default force vector
+    # If engine is On FIXME: not implemented yet
+    enabled = False
     
     @property
     def thrust(self):
-        print "thrust get" 
-        print self.current_force
-        return self.current_force/(self.max_thrust/100.0)
+        return (self.current_force - self.min_thrust)/((self.max_thrust-self.min_thrust)/100.0)
     
     @thrust.setter
     def thrust(self,output):
-        
-        print "thrust set"
         if output > 100: output = 100
         elif output <0 : output = 0
         self.current_force = self.min_thrust + output*((self.max_thrust - self.min_thrust)/100.0)
@@ -37,9 +32,12 @@ class Engine(object):
         force_vec = map(lambda x:x*self.current_force, self.vector)
         self.body.addForce(force_vec)
     
-    def __init__(self,body,vector=(0.0,1.0,0.0)):
+    def __init__(self,body,vector=(0.0,1.0,0.0),max_thrust = 1,min_thrust = 0):
         self.body = body
         self.vector = vector
+        self.max_thrust = max_thrust    #Not Zero
+        self.min_thrust = min_thrust    #May be negative value
+        self.current_force = 0
         
 class GravityEngine(Engine):
     pass
@@ -51,32 +49,54 @@ class SimpleObject(object):
              
     @property
     def position(self):
-        return self.body.getPosition()
+        if self.mass:
+            return self.body.getPosition()
+        else:
+            return self.geom.getPosition()
+        
     @position.setter
     def position(self,Cordinats):
-        self.body.setPosition(Cordinats)
+        if self.mass:
+            # Check if object hase phisics body with mass
+            self.body.setPosition(Cordinats)
+        else:
+            self.geom.setPosition(Cordinats)
         
     @property
     def rotation(self):
-        return self.body.getRotation()
+        if self.mass:
+            return self.body.getRotation()
+        else:
+            return self.geom.getRotation()
+        
     @rotation.setter
     def rotation(self,RotMatrix):
-        self.body.setRotation(RotMatrix)
+        if self.mass:
+            self.body.setRotation(RotMatrix)
+        else:
+            self.geom.setRotation(RotMatrix)
         
-    def __init__(self, PhysicsWorld, GraphicsEngine, density,dimensions, position):
+    def __init__(self, PhysicsWorld, GraphicsEngine, mass,dimensions, position):
         
         if debug: print "Init: Physics body object"
         
         #Add itself to given Physics world
         self.pWorld = PhysicsWorld
-        self.body, self.geom = self.pWorld.create_box(density,dimensions)
-        self.pWorld.bodies.append(self.body)
+        if mass :
+            # create body with mass
+            self.body, self.geom = self.pWorld.create_box(mass,dimensions)
+            self.pWorld.bodies.append(self.body)
+        else:
+            # create only a geom
+            self.geom = self.pWorld.create_box_geom(dimensions)
+            
         self.pWorld.geoms.append(self.geom)
         
         #Add itself to graphix engine
         self.graphics = GraphicsEngine
         self.graphics.active.append(self)
         
+        self.mass = mass
         self.position = position
         self.dimensions = dimensions
         
@@ -88,22 +108,18 @@ class SimpleObject(object):
 #--------------------------------------
 
 class Wall(SimpleObject):
-    
-    def __init__(self, *args, **kwargs):
-        SimpleObject.__init__(self, *args, **kwargs)
-        # Make fixed join for the wall
-        self.pWorld.set_fixed(self.body)
+
     def calculate(self):
         #set no rotation
-        self.rotation = (0, -1, 0, 1, 0, 0, 0, 0, 1)
+        self.rotation = ZERO_ROTATION
 
 class Ship(SimpleObject):
-      
+    #FIXME: refactor this 
     def __init__(self, *args, **kwargs):
         SimpleObject.__init__(self, *args, **kwargs)
-        self.gravity_engine = Engine(self.body,(0.0,1.0,0.0))
-        self.nose_engine = Engine(self.body,(1.0,0.0,0.0))
-        self.back_engine = Engine(self.body,(-1.0,0.0,0.0))
+        self.gravity_engine = Engine(self.body,(0.0,1.0,0.0),max_thrust = 1500000,min_thrust = 0)
+        self.nose_engine = Engine(self.body,(1.0,0.0,0.0),max_thrust = 100000,min_thrust = 0)
+        self.back_engine = Engine(self.body,(-1.0,0.0,0.0),max_thrust = 100000,min_thrust = 0)
         
     def calculate(self):
         #apply engine forces
@@ -112,5 +128,5 @@ class Ship(SimpleObject):
         self.back_engine.applyForce()
         
         #set no rotation
-        self.rotation = (0, -1, 0, 1, 0, 0, 0, 0, 1)
+        self.rotation = ZERO_ROTATION
         

@@ -11,7 +11,7 @@ from pyglet.window import key
 debug = True
 
 
-class DefaultController():
+class InputStateClass():
     '''
     Basic controller state class
     '''    
@@ -24,7 +24,7 @@ class DefaultController():
 
 ##################################Window setup
 class pygwindow(pyglet.window.Window):
-    controller = DefaultController()
+    inputstate = InputStateClass()
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self):
         from pyglet.gl import Config
@@ -34,7 +34,7 @@ class pygwindow(pyglet.window.Window):
             super(pygwindow, self).__init__(resizable=True, config=config)
         except:
             super(pygwindow, self).__init__(resizable=True)
-            
+
         self.width = 640
         self.height = 480
                   
@@ -63,23 +63,23 @@ class pygwindow(pyglet.window.Window):
         if symbol == key.ESCAPE:
             self.dispatch_event('on_close')
         elif symbol == key.RIGHT:
-            self.controller.right = True
+            self.inputstate.right = True
         elif symbol == key.LEFT:
-            self.controller.left = True
+            self.inputstate.left = True
         elif symbol == key.UP:
-            self.controller.up =True
+            self.inputstate.up =True
         elif symbol == key.DOWN:
-            self.controller.down = True
+            self.inputstate.down = True
             
     def on_key_release(self,symbol, modifiers):
         if symbol == key.RIGHT:
-            self.controller.right = False
+            self.inputstate.right = False
         elif symbol == key.LEFT:
-            self.controller.left = False
+            self.inputstate.left = False
         elif symbol == key.UP:
-            self.controller.up = False
+            self.inputstate.up = False
         elif symbol == key.DOWN:
-            self.controller.down = False
+            self.inputstate.down = False
 
    
 class PygletApp():    

@@ -7,7 +7,7 @@
 #@author: keeper
 # ----------------------------------------------------------------------------
 from pyglet.gl import *
-debug = True
+debug = False
 
 
 # Define a simple function to create ctypes arrays of floats:
@@ -115,6 +115,8 @@ class GraphicsEngine():
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # A general OpenGL initialization function.  Sets all of the initial parameters.
     def __init__(self, Width, Height):                # We call this right after our OpenGL window is created.
+        
+        print glGetString(GL_VERSION)
         glClearColor(0.4,0.4,0.4,0)       # This Will Clear The Background Color To Black
         glClearDepth(1.0)                          # Enables Clearing Of The Depth Buffer
         glDepthFunc(GL_LESS)                      # The Type Of Depth Test To Do
@@ -133,12 +135,12 @@ class GraphicsEngine():
         glMatrixMode(GL_MODELVIEW)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # The function called when our window is resized (which shouldn't happen if you enable fullscreen, below)
+    # The function called when our window is resized (which shouldn't happen if you enable fullscreen)
     def ReSizeGLScene(self,Width, Height):
         if Height == 0:                              # Prevent A Divide By Zero If The Window Is Too Small
             Height = 1
         glViewport(0, 0, Width, Height)        # Reset The Current Viewport And Perspective Transformation
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(45.0, float(Width)/float(Height), 0.1, 100.0)
+        gluPerspective(45.0, float(Width)/float(Height), 0.1, 50.0)
         glMatrixMode(GL_MODELVIEW)
